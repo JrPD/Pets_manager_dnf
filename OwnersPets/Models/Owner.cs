@@ -8,6 +8,10 @@ namespace OwnersPets.Models
 {
 	public class Owner
 	{
+		public Owner()
+		{
+
+		}
 		public Owner(string name)
 		{
 			//todo verify
@@ -15,6 +19,7 @@ namespace OwnersPets.Models
 		}
 		public int OwnerId { get; set; }
 		public string OwnerName { get; set; }
+
 		public IList<Pet> Pets { get; set; }
 
 		[NotMapped]

@@ -7,6 +7,10 @@ namespace OwnersPets.Models
 {
 	public class Pet
 	{
+		public Pet()
+		{
+
+		}
 		public Pet(string name)
 		{
 			PetName = name;
