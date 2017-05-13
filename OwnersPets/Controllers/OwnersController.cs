@@ -12,14 +12,14 @@ using OwnersPets.Models;
 
 namespace OwnersPets.Controllers
 {
-    public class OwnersController : ApiController
-    {
-        private AppDbContext db = new AppDbContext();
+	public class OwnersController : ApiController
+	{
+		private AppDbContext db = new AppDbContext();
 
-        // GET: api/Owners
-        public IQueryable<Owner> GetOwners()
-        {
-            var result = db.Owners.Include(p =>p.Pets);
+		// GET: api/Owners
+		public IQueryable<Owner> GetOwners()
+		{
+			var result = db.Owners.Include(p =>p.Pets);
 			foreach (var item in result)
 			{
 				if (item.Pets!=null)
@@ -28,107 +28,107 @@ namespace OwnersPets.Controllers
 				}
 			}
 			return result;
-        }
+		}
 
-        // GET: api/Owners/5
-        [ResponseType(typeof(Owner))]
-        public IHttpActionResult GetOwner(int id)
-        {
-            Owner owner = db.Owners.Find(id);
-            if (owner == null)
-            {
-                return NotFound();
-            }
+		// GET: api/Owners/5
+		[ResponseType(typeof(Owner))]
+		public IHttpActionResult GetOwner(int id)
+		{
+			Owner owner = db.Owners.Find(id);
+			if (owner == null)
+			{
+				return NotFound();
+			}
 
-            return Ok(owner);
-        }
+			return Ok(owner);
+		}
 
-        // PUT: api/Owners/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutOwner(int id, Owner owner)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+		// PUT: api/Owners/5
+		[ResponseType(typeof(void))]
+		public IHttpActionResult PutOwner(int id, Owner owner)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
 
-            if (id != owner.OwnerId)
-            {
-                return BadRequest();
-            }
+			if (id != owner.OwnerId)
+			{
+				return BadRequest();
+			}
 
-            db.Entry(owner).State = EntityState.Modified;
+			db.Entry(owner).State = EntityState.Modified;
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OwnerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+			try
+			{
+				db.SaveChanges();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!OwnerExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+			return StatusCode(HttpStatusCode.NoContent);
+		}
 
-        // POST: api/Owners
-        [ResponseType(typeof(Owner))]
-        public IHttpActionResult PostOwner(string ownerName)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+		// POST: api/Owners
+		[ResponseType(typeof(Owner))]
+		public IHttpActionResult PostOwner(string ownerName)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
 
 			// make sure, that returns same owner
 			db.Owners.Add(new Owner(ownerName));
-            db.SaveChanges();
+			db.SaveChanges();
 			Owner owner = db.Owners.Include(p => p.Pets)
 				.Where(o => o.OwnerName == ownerName).FirstOrDefault();
 
 
-            return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);
-        }
+			return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);
+		}
 
-        // DELETE: api/Owners/5
-        [ResponseType(typeof(Owner))]
-        public IHttpActionResult DeleteOwner(int id)
-        {
+		// DELETE: api/Owners/5
+		[ResponseType(typeof(Owner))]
+		public IHttpActionResult DeleteOwner(int id)
+		{
 			Owner owner = db.Owners.Include(p => p.Pets)
 				.Where(o => o.OwnerId == id).FirstOrDefault();
-            if (owner == null)
-            {
-                return NotFound();
-            }
+			if (owner == null)
+			{
+				return NotFound();
+			}
 			if (owner.Pets!=null)
 			{
 				db.Pets.RemoveRange(owner.Pets);
 			}
-            db.Owners.Remove(owner);
-            db.SaveChanges();
+			db.Owners.Remove(owner);
+			db.SaveChanges();
 
-            return Ok(owner);
-        }
+			return Ok(owner);
+		}
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				db.Dispose();
+			}
+			base.Dispose(disposing);
+		}
 
-        private bool OwnerExists(int id)
-        {
-            return db.Owners.Count(e => e.OwnerId == id) > 0;
-        }
-    }
+		private bool OwnerExists(int id)
+		{
+			return db.Owners.Count(e => e.OwnerId == id) > 0;
+		}
+	}
 }

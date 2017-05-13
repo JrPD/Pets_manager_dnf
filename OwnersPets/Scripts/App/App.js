@@ -10,7 +10,7 @@
 		$scope.owners = [];
 		$scope.title = "Hello";
 		$scope.currentPets = [];
-		$scope.result = {};
+		$scope.result = "";
 
 		$scope.click = click;
 		$scope.removeOwner = removeOwner;
@@ -42,7 +42,7 @@
 			)
 			.then(function (response) {
 				if (response.status = 201) {
-					$scope.owners.Add(respons.data)
+					$scope.owners.unshift(response.data)
 					$scope.result = "Created new owner with name: " + response.data.ownerName;
 					console.log(response);
 
@@ -53,12 +53,12 @@
 		function removeFromDb(owner, $scope, $http) {
 			$http({
 				method: 'DELETE',
-				url: uri+"/"+ owner.ownerId,
-				//dataType: 'json',
-				//params: { dir: JSON.stringify(dirs) }
+				url: uri+"/"+ owner.ownerId
 			}
 			)
 			.then(function (response) {
+				var name = response.data.ownerName;
+				$scope.result = "Owner with name: " + name+ " removed"
 				console.log(response);
 			});
 		}

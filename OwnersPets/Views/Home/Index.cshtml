@@ -15,17 +15,18 @@
 					<input type="text" ng-model="newOwner" name ="newOwner" id="new-owner" placeholder="Enter new Owner"  autofocus>
 					<input type="submit" id="submit" value="Add owner"/>
 				</form>
-				<table>
+
+				<table id="ownerTable">
 					<tr>
-						<th>Name</th>
-						<th>Pets Count</th>
+						<th class="tableTitle">Name</th>
+						<th class="tableTitle">Pets Count</th>
 					</tr>
 					<tbody ng-repeat="owner in owners">
 						<tr ng-click="click(this)">
 							<td>{{owner.ownerName}}</td>
 							<td>
-								<div class =" block">{{owner.count}}</div>
-								<div class="block"><button class="destroy" ng-click="removeOwner(owner)">Delete</button></div>
+								<div class="table_item">{{owner.count}}</div>
+								<div class="table_item"><button class="deleteButton" ng-click="removeOwner(owner)">Delete</button></div>
 							</td>
 						</tr>
 					</tbody>
@@ -48,10 +49,3 @@
 
 </div>
 
-<style>
-	table, tr, td, th {
-		border: 1px solid #ccc;
-		padding: 10px;
-		margin: 10px;
-	}
-</style> 
