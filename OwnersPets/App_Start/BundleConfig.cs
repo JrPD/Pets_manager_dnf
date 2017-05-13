@@ -23,6 +23,10 @@ namespace OwnersPets
 			bundles.Add(new StyleBundle("~/Content/css").Include(
 					  "~/Content/bootstrap.css",
 					  "~/Content/site.css"));
+
+			bundles.Add(new ScriptBundle("~/bundles/AwesomeAngularMVCApp")
+	.IncludeDirectory("~/Scripts/App", "*.js")
+	.Include("~/Scripts/angular.js", "~/Scripts/App.js"));
 		}
 	}
 }

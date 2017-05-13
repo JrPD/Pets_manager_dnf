@@ -16,6 +16,7 @@ namespace OwnersPets.Models
 		{
 			//todo verify
 			OwnerName = name;
+			Pets = new List<Pet>();
 		}
 		public int OwnerId { get; set; }
 		public string OwnerName { get; set; }

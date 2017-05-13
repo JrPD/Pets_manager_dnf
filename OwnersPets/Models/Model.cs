@@ -22,6 +22,11 @@ namespace OwnersPets.Models
 			return new AppDbContext();
 		}
 
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			//modelBuilder.Entity<Owner>()
+			//	.WillCascadeOnDelete(true);
+		}
 		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		//{
 		//	var sqliteConnectionInitializer = new SqliteCreateDatabaseIfNotExists<AppDbContext>(modelBuilder);

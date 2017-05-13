@@ -16,13 +16,21 @@ namespace OwnersPets.Controllers
     {
         private AppDbContext db = new AppDbContext();
 
-        // GET: api/Owners1
+        // GET: api/Owners
         public IQueryable<Owner> GetOwners()
         {
-            return db.Owners;
+            var result = db.Owners.Include(p =>p.Pets);
+			foreach (var item in result)
+			{
+				if (item.Pets!=null)
+				{
+					item.Count = item.Pets.Count();
+				}
+			}
+			return result;
         }
 
-        // GET: api/Owners1/5
+        // GET: api/Owners/5
         [ResponseType(typeof(Owner))]
         public IHttpActionResult GetOwner(int id)
         {
@@ -35,7 +43,7 @@ namespace OwnersPets.Controllers
             return Ok(owner);
         }
 
-        // PUT: api/Owners1/5
+        // PUT: api/Owners/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutOwner(int id, Owner owner)
         {
@@ -70,31 +78,39 @@ namespace OwnersPets.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Owners1
+        // POST: api/Owners
         [ResponseType(typeof(Owner))]
-        public IHttpActionResult PostOwner(Owner owner)
+        public IHttpActionResult PostOwner(string ownerName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Owners.Add(owner);
+			// make sure, that returns same owner
+			db.Owners.Add(new Owner(ownerName));
             db.SaveChanges();
+			Owner owner = db.Owners.Include(p => p.Pets)
+				.Where(o => o.OwnerName == ownerName).FirstOrDefault();
+
 
             return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);
         }
 
-        // DELETE: api/Owners1/5
+        // DELETE: api/Owners/5
         [ResponseType(typeof(Owner))]
         public IHttpActionResult DeleteOwner(int id)
         {
-            Owner owner = db.Owners.Find(id);
+			Owner owner = db.Owners.Include(p => p.Pets)
+				.Where(o => o.OwnerId == id).FirstOrDefault();
             if (owner == null)
             {
                 return NotFound();
             }
-
+			if (owner.Pets!=null)
+			{
+				db.Pets.RemoveRange(owner.Pets);
+			}
             db.Owners.Remove(owner);
             db.SaveChanges();
 

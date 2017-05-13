@@ -1,24 +1,57 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿	<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+	<script src="~/Scripts/angular.js"></script>
+	<script src="~/Scripts/App/App.js"></script>
+<div class="row" ng-app="OwnersPets">
+	<div class="col-md-12" ng-controller="OwnersCtrl">
+		<div class="col-md-6">
+
+
+			<div id="tblSubs">
+
+				<h3>{{title}}</h3>
+			<h5>{{result}}</h5>
+
+				<form id="owner-form" ng-submit="addOwner()">
+					<input type="text" ng-model="newOwner" name ="newOwner" id="new-owner" placeholder="Enter new Owner"  autofocus>
+					<input type="submit" id="submit" value="Add owner"/>
+				</form>
+				<table>
+					<tr>
+						<th>Name</th>
+						<th>Pets Count</th>
+					</tr>
+					<tbody ng-repeat="owner in owners">
+						<tr ng-click="click(this)">
+							<td>{{owner.ownerName}}</td>
+							<td>
+								<div class =" block">{{owner.count}}</div>
+								<div class="block"><button class="destroy" ng-click="removeOwner(owner)">Delete</button></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<table>
+				<tr>
+					<th>Pet Name</th>
+				</tr>
+				<tbody ng-repeat="pet in currentPets">
+					<tr>
+						<td>{{pet.petName}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
-</div>
+
+<style>
+	table, tr, td, th {
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin: 10px;
+	}
+</style> 
