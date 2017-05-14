@@ -16,20 +16,23 @@ textarea {
     max-width: 280px;
 }
 
-table, tr, td, th {
+/*table, tr, td, th {
 	border: 1px solid #ccc;
 	padding: 5px 10px;
 	margin: 10px;
-}
-.table_item{
-	display:inline;
-}
-#ownerTable{
-	width:100% !important
-}
-.deleteButton{
-	float:right;
-}
-.tableTitle{
-	text-align:center;
-}
+}*/
+	.table_item{
+		display:inline;
+	}
+	#ownerTable{
+		width:100% !important
+	}
+	.deleteButton{
+		float:right;
+	}
+	/*.tableTitle{
+		text-align:center;
+	}*/
+	.padding{
+		padding:15px 0;
+	}

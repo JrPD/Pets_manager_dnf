@@ -34,7 +34,9 @@ namespace OwnersPets.Controllers
 		[ResponseType(typeof(Owner))]
 		public IHttpActionResult GetOwner(int id)
 		{
-			Owner owner = db.Owners.Find(id);
+			Owner owner = db.Owners.Include(p => p.Pets)
+				.Where(o => o.OwnerId == id).FirstOrDefault();
+
 			if (owner == null)
 			{
 				return NotFound();
@@ -80,7 +82,7 @@ namespace OwnersPets.Controllers
 
 		// POST: api/Owners
 		[ResponseType(typeof(Owner))]
-		public IHttpActionResult PostOwner(string ownerName)
+		public IHttpActionResult PostOwner(Owner owner)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -88,10 +90,10 @@ namespace OwnersPets.Controllers
 			}
 
 			// make sure, that returns same owner
-			db.Owners.Add(new Owner(ownerName));
+			db.Owners.Add(owner);
 			db.SaveChanges();
-			Owner owner = db.Owners.Include(p => p.Pets)
-				.Where(o => o.OwnerName == ownerName).FirstOrDefault();
+			//Owner ownern = db.Owners.Include(p => p.Pets)
+			//	.Where(o => o.OwnerId == owner.OwnerId).FirstOrDefault();
 
 
 			return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);

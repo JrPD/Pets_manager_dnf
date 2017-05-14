@@ -15,14 +15,14 @@ namespace OwnersPets.Controllers
 {
 	public class PetsController : ApiController
 	{
-		public string ConvertToJson(dynamic names)
-		{
-			return	JsonConvert.SerializeObject(names,	Formatting.None,
-				new JsonSerializerSettings()
-				{
-					ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-				});
-		}
+		//public string ConvertToJson(dynamic names)
+		//{
+		//	return	JsonConvert.SerializeObject(names,	Formatting.None,
+		//		new JsonSerializerSettings()
+		//		{
+		//			ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+		//		});
+		//}
 		private AppDbContext db = new AppDbContext();
 
 		// GET: api/Pets
@@ -87,8 +87,14 @@ namespace OwnersPets.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-
+			Owner owner = db.Owners.Include(p => p.Pets)
+				.Where(o => o.OwnerId == pet.OwnerId.OwnerId).FirstOrDefault();
+			pet.OwnerId = owner;
+			//owner.Pets.Add(pet);
 			db.Pets.Add(pet);
+			//	db.Entry(owner).State = System.Data.Entity.EntityState.Modified;     
+			//owner.Pets.Add(pet);
+			//db.Pets.Add(pet);
 			db.SaveChanges();
 
 			return CreatedAtRoute("DefaultApi", new { id = pet.PetId }, pet);

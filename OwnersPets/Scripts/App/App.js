@@ -1,81 +1,28 @@
-﻿
-(function () {
+﻿(function () {
 	'use strict';
 
-	// controller function
-	function dirCtrl($scope, $http) {
-
-		var uri = "/api/owners";
-
-		$scope.owners = [];
-		$scope.title = "Hello";
-		$scope.currentPets = [];
-		$scope.result = "";
-
-		$scope.click = click;
-		$scope.removeOwner = removeOwner;
-		$scope.addOwner = addOwner;
-
-		function click(ref) {
-			$scope.currentPets = ref.owner.pets;
-		}	
-
-		function removeOwner(owner) {
-			var index = $scope.owners.indexOf(owner);
-			if (index > -1) {
-				$scope.owners.splice(index, 1);
-			}
-			removeFromDb(owner, $scope, $http);
-		}
-
-		function addOwner() {
-			addToDb(this.newOwner, $scope, $http)
-		}
-
-		function addToDb(name, $scope, $http) {
-			$http({
-				method: 'POST',
-				url: uri,
-				dataType: 'json',
-				params: { ownerName: name }
-			}
-			)
-			.then(function (response) {
-				if (response.status = 201) {
-					$scope.owners.unshift(response.data)
-					$scope.result = "Created new owner with name: " + response.data.ownerName;
-					console.log(response);
-
-				}
-			});
-		}
-
-		function removeFromDb(owner, $scope, $http) {
-			$http({
-				method: 'DELETE',
-				url: uri+"/"+ owner.ownerId
-			}
-			)
-			.then(function (response) {
-				var name = response.data.ownerName;
-				$scope.result = "Owner with name: " + name+ " removed"
-				console.log(response);
-			});
-		}
-
-		$("#LoadingImage").show();
-
-		$http.get(uri)
-			.then(function (response) {
-				var data = response.data;
-				$scope.owners = data;
-				console.log(data);
-			});
+	function routing($routeProvider, $locationProvider) {
+		$routeProvider
+		  .when('/Pets/:ownerId', {
+		  	templateUrl: 'Pets.html',
+		  	controller: 'PetCtrl',
+		  	controllerAs: 'PetCtrl'
+		  })
+		 .when('/', {
+		 	templateUrl: 'Owners.html',
+		 	controller: 'OwnersCtrl',
+		 	controllerAs: 'OwnersCtrl'
+		 })
+		.otherwise({
+			templateUrl: 'Owners.html',
+			controller: 'OwnersCtrl',
+			controllerAs: 'OwnersCtrl'
+		})		;
+		$locationProvider.html5Mode(true);
 	}
 
-	angular
-		.module('OwnersPets', [])
-		.controller('OwnersCtrl', dirCtrl);
+	var app = angular
+		.module('OwnersPets',['ngRoute'])
+		.config(['$routeProvider', '$locationProvider',routing])
 
-	dirCtrl.$inject = ['$scope', '$http'];
 })();
