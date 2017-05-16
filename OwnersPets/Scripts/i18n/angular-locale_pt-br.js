@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "s\u00e1bado"
     ],
     "ERANAMES": [
-      "antes de Cristo",
-      "depois de Cristo"
+      "Antes de Cristo",
+      "Ano do Senhor"
     ],
     "ERAS": [
       "a.C.",
@@ -62,20 +62,6 @@ $provide.value("$locale", {
       "nov",
       "dez"
     ],
-    "STANDALONEMONTH": [
-      "janeiro",
-      "fevereiro",
-      "mar\u00e7o",
-      "abril",
-      "maio",
-      "junho",
-      "julho",
-      "agosto",
-      "setembro",
-      "outubro",
-      "novembro",
-      "dezembro"
-    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -111,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
+        "negPre": "\u00a4-",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -119,7 +105,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "pt-br",
-  "localeID": "pt_BR",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 2 && n != 2) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

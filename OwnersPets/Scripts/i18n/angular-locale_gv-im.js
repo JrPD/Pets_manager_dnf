@@ -77,22 +77,8 @@ $provide.value("$locale", {
       "Luanistyn",
       "M-fouyir",
       "J-fouyir",
-      "M-Houney",
-      "M-Nollick"
-    ],
-    "STANDALONEMONTH": [
-      "Jerrey-geuree",
-      "Toshiaght-arree",
-      "Mayrnt",
-      "Averil",
-      "Boaldyn",
-      "Mean-souree",
-      "Jerrey-souree",
-      "Luanistyn",
-      "Mean-fouyir",
-      "Jerrey-fouyir",
-      "Mee Houney",
-      "Mee ny Nollick"
+      "M.Houney",
+      "M.Nollick"
     ],
     "WEEKENDRANGE": [
       5,
@@ -129,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
+        "negPre": "\u00a4-",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -137,7 +123,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "gv-im",
-  "localeID": "gv_IM",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

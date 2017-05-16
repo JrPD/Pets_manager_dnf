@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "l\u00f8rdag"
     ],
     "ERANAMES": [
-      "f\u00f8r Kristus",
-      "etter Kristus"
+      "f.Kr.",
+      "e.Kr."
     ],
     "ERAS": [
       "f.Kr.",
@@ -62,20 +62,6 @@ $provide.value("$locale", {
       "nov.",
       "des."
     ],
-    "STANDALONEMONTH": [
-      "januar",
-      "februar",
-      "mars",
-      "april",
-      "mai",
-      "juni",
-      "juli",
-      "august",
-      "september",
-      "oktober",
-      "november",
-      "desember"
-    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -111,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4\u00a0",
+        "negPre": "\u00a4\u00a0-",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -119,7 +105,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "nb-sj",
-  "localeID": "nb_SJ",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

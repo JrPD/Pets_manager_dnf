@@ -17,19 +17,60 @@ namespace OwnersPets.Controllers
 		private AppDbContext db = new AppDbContext();
 
 		// GET: api/Owners
-		public IQueryable<Owner> GetOwners()
+		//[Route("{pageSize:int}/{pageNumber:int}/{orderBy:alpha?}")]
+		public IHttpActionResult GetOwners(int pageSize, int pageNumber)
+		//public IQueryable<Owner> GetOwners()
 		{
-			var result = db.Owners.Include(p =>p.Pets);
-			foreach (var item in result)
+			var totalCount =db.Owners.Count();
+			var totalPages = Math.Ceiling((double)totalCount / pageSize);
+			var ownersQuery = db.Owners.Include(p =>p.Pets);
+			ownersQuery = ownersQuery.OrderBy(c => c.OwnerName);
+
+			foreach (var item in ownersQuery)
 			{
 				if (item.Pets!=null)
 				{
 					item.Count = item.Pets.Count();
 				}
 			}
-			return result;
+
+			var owners = ownersQuery.Skip((pageNumber - 1) * pageSize)
+									.Take(pageSize)
+									.ToList();
+
+			var result = new
+			{
+				TotalCount = totalCount,
+				totalPages = totalPages,
+				Owners = owners
+			};
+			//return result;
+
+			return Ok(result);
+
+
+			//var result = db.Owners.Include(p =>p.Pets);
+			//foreach (var item in result)
+			//{
+			//	if (item.Pets!=null)
+			//	{
+			//		item.Count = item.Pets.Count();
+			//	}
+			//}
 		}
 
+		public IQueryable<Owner> GetOwners()
+		{
+			var result = db.Owners.Include(p => p.Pets);
+			foreach (var item in result)
+			{
+				if (item.Pets != null)
+				{
+					item.Count = item.Pets.Count();
+				}
+			}
+			return result;
+		}
 		// GET: api/Owners/5
 		[ResponseType(typeof(Owner))]
 		public IHttpActionResult GetOwner(int id)
@@ -92,9 +133,6 @@ namespace OwnersPets.Controllers
 			// make sure, that returns same owner
 			db.Owners.Add(owner);
 			db.SaveChanges();
-			//Owner ownern = db.Owners.Include(p => p.Pets)
-			//	.Where(o => o.OwnerId == owner.OwnerId).FirstOrDefault();
-
 
 			return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);
 		}

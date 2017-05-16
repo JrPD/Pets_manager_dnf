@@ -1,65 +1,68 @@
 ﻿// controller function
 angular
 	.module('OwnersPets')
-	.controller('OwnersCtrl',['$scope', '$http', '$location', '$route', '$routeParams', OwnerCtrl])
-
-function OwnerCtrl($scope, $http, $route, $routeParams, $location) {
+	.controller('OwnersCtrl', ['$scope', '$http', '$location', '$route', '$routeParams','$q', 'getOwnerSvc', OwnerCtrl])
+	
+function OwnerCtrl($scope, $http, $route, $routeParams, $location, $q, getOwnerSvc) {
 	var uri = "/api/owners/";
 
-	$scope.owners = [];
-	$scope.title = "Hello";
-	$scope.currentPets = [];
 	$scope.result = "";
-
-	$scope.click = click;
 	$scope.removeOwner = removeOwner;
 	$scope.addOwner = addOwner;
-	$scope.viewPets = viewPets;
+	$scope.pages = getOwnerSvc.pages;
+	$scope.info = getOwnerSvc.paging.info;
 
-	function viewPets(owner) {
+	$scope.navigate = navigate;
 
+	$scope.status = {
+		type: "info",
+		message: "ready",
+		busy: false
+	};
+
+	activate();
+
+	function activate() {
+		//if this is the first activation of the controller load the first page
+		if (getOwnerSvc.paging.info.currentPage === 0) {
+			navigate(1);
+		}
 	}
 
-	function click(ref) {
-		//$scope.currentPets = ref.owner.pets;
-		//$('#OwnersPage').hide();
+	function navigate(pageNumber) {
+		$scope.status.busy = true;
+		$scope.status.message = "loading records";
+
+		getOwnerSvc.navigate(pageNumber)
+						.then(function () {
+							$scope.status.message = "ready";
+						}, function (result) {
+							$scope.status.message = "something went wrong: " + (result.error || result.statusText);
+						})
+						['finally'](function () {
+							$scope.status.busy = false;
+						});
 	}
 
 	function removeOwner(owner) {
-		var index = $scope.owners.indexOf(owner);
+		var owners = $scope.pages[$scope.info.currentPage].owners;
+		var index = owners.indexOf(owner);
 		if (index > -1) {
-			$scope.owners.splice(index, 1);
+			owners.splice(index, 1);
 		}
 		removeFromDb(owner, $scope, $http);
-		updateTotal();
+	
 	}
 
 	function addOwner() {
-		if (this.newOwner) {
-			addToDb(this.newOwner, $scope, $http);
-			updateTotal();
+		if (!this.newOwner) {
+			$scope.result = "Too short name";
+			return;
 		}
-		$scope.result = "Too short name";
-
+		addToDb(this.newOwner, $scope, $http);
+		$scope.pages[$scope.info.currentPage] = null;
+		navigate($scope.info.currentPage);
 	}
-
-	//function addToDb(name, $scope, $http) {
-	//	$http({
-	//		method: 'POST',
-	//		url: uri,
-	//		dataType: 'json',
-	//		params: { ownerName: name }
-	//	}
-	//	)
-	//	.then(function (response) {
-	//		if (response.status = 201) {
-	//			$scope.owners.unshift(response.data)
-	//			$scope.result = "Created new owner with name: " + response.data.ownerName;
-	//			console.log(response);
-
-	//		}
-	//	});
-	//}
 
 	function addToDb(ownerName, $scope, $http) {
 		var owner = {
@@ -70,8 +73,7 @@ function OwnerCtrl($scope, $http, $route, $routeParams, $location) {
 			if (response.status = 201) {
 				$scope.owners.unshift(response.data)
 				$scope.result = "Created new owner with name: " + response.data.ownerName;
-				console.log(response);
-
+				updateTotal();
 			}
 		});
 	}
@@ -80,24 +82,19 @@ function OwnerCtrl($scope, $http, $route, $routeParams, $location) {
 		$http({
 			method: 'DELETE',
 			url: uri  + owner.ownerId
-		}
-		)
+		})
 		.then(function (response) {
 			var name = response.data.ownerName;
 			$scope.result = "Owner with name: " + name + " removed"
-			console.log(response);
+			updateTotal();
 		});
-	}
-	function updateTotal() {
-		$scope.totalCount = $scope.owners.length;
 	}
 
-	$http.get(uri)
-		.then(function (response) {
-			var data = response.data;
-			$scope.totalCount = data.length;
-			$scope.owners = data;
-			updateTotal();
-			console.log(data);
-		});
+	function updateTotal() {
+		// load new information in page - replace delete item
+		$scope.pages[$scope.info.currentPage] = null;
+		navigate($scope.info.currentPage)
+	}
+
+	
 }
