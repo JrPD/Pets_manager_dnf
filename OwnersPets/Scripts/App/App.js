@@ -33,4 +33,15 @@
 				} 
 			});
 	});
+	app.factory('petsSvc', function ($resource) {
+		return $resource("api/pets/:id",
+			{ id: "@id" },
+			{
+				'query': {
+					method: 'GET',
+					url: '/api/pets/:pageSize/:pageNumber/',
+					params: { pageSize: 3, pageNumber: '@pageNumber' }
+				}
+			});
+	});
 })();

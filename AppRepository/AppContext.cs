@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
-
+using SQLite.CodeFirst.Convention;
+using SQLite.CodeFirst.Extensions;
+using SQLite.CodeFirst.Utility;
+using SQLite.CodeFirst;
 namespace OwnersPets.Models
 {
 	public class AppDbContext : DbContext
@@ -22,11 +25,6 @@ namespace OwnersPets.Models
 			return new AppDbContext();
 		}
 
-		protected override void OnModelCreating(DbModelBuilder modelBuilder)
-		{
-			//modelBuilder.Entity<Owner>()
-			//	.WillCascadeOnDelete(true);
-		}
 		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		//{
 		//	var sqliteConnectionInitializer = new SqliteCreateDatabaseIfNotExists<AppDbContext>(modelBuilder);

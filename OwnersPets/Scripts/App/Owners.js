@@ -60,8 +60,6 @@ function OwnerCtrl($scope, $http, $route, $routeParams, $location, $q, getOwnerS
 			return;
 		}
 		addToDb(this.newOwner, $scope, $http);
-		$scope.pages[$scope.info.currentPage] = null;
-		navigate($scope.info.currentPage);
 	}
 
 	function addToDb(ownerName, $scope, $http) {
@@ -71,7 +69,7 @@ function OwnerCtrl($scope, $http, $route, $routeParams, $location, $q, getOwnerS
 		$http.post(uri, owner)
 		.then(function (response) {
 			if (response.status = 201) {
-				$scope.owners.unshift(response.data)
+				//$scope.owners.unshift(response.data)
 				$scope.result = "Created new owner with name: " + response.data.ownerName;
 				updateTotal();
 			}
@@ -92,6 +90,7 @@ function OwnerCtrl($scope, $http, $route, $routeParams, $location, $q, getOwnerS
 
 	function updateTotal() {
 		// load new information in page - replace delete item
+		// todo replace pages, with graater number than currentPage
 		$scope.pages[$scope.info.currentPage] = null;
 		navigate($scope.info.currentPage)
 	}

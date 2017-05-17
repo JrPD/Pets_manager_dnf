@@ -5,9 +5,9 @@
         .module('OwnersPets')
         .directive('pager', pager);
 
-	pager.$inject = ['$window', 'getOwnerSvc'];
+	//pager.$inject = ['$window', 'getOwnerSvc'];
 
-	function pager($window, getOwnerSvc) {
+	function pager($window) {
 		var directive = {
 			link: link,
 			restrict: 'E',

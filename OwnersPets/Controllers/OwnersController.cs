@@ -9,74 +9,38 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using OwnersPets.Models;
+using OwnersPets.DAL;
 
 namespace OwnersPets.Controllers
 {
 	public class OwnersController : ApiController
 	{
-		private AppDbContext db = new AppDbContext();
+		private OwnerDataRepository _repo;
 
+		public OwnersController()
+		{
+			_repo = new OwnerDataRepository(new AppDbContext());
+		}
+		public OwnersController(OwnerDataRepository repo)
+		{
+			_repo = repo;
+		}
 		// GET: api/Owners
 		//[Route("{pageSize:int}/{pageNumber:int}/{orderBy:alpha?}")]
 		public IHttpActionResult GetOwners(int pageSize, int pageNumber)
-		//public IQueryable<Owner> GetOwners()
 		{
-			var totalCount =db.Owners.Count();
-			var totalPages = Math.Ceiling((double)totalCount / pageSize);
-			var ownersQuery = db.Owners.Include(p =>p.Pets);
-			ownersQuery = ownersQuery.OrderBy(c => c.OwnerName);
-
-			foreach (var item in ownersQuery)
-			{
-				if (item.Pets!=null)
-				{
-					item.Count = item.Pets.Count();
-				}
-			}
-
-			var owners = ownersQuery.Skip((pageNumber - 1) * pageSize)
-									.Take(pageSize)
-									.ToList();
-
-			var result = new
-			{
-				TotalCount = totalCount,
-				totalPages = totalPages,
-				Owners = owners
-			};
-			//return result;
+			var result = _repo.GetOwnersByPages(pageSize, pageNumber);
 
 			return Ok(result);
-
-
-			//var result = db.Owners.Include(p =>p.Pets);
-			//foreach (var item in result)
-			//{
-			//	if (item.Pets!=null)
-			//	{
-			//		item.Count = item.Pets.Count();
-			//	}
-			//}
+			
 		}
 
-		public IQueryable<Owner> GetOwners()
-		{
-			var result = db.Owners.Include(p => p.Pets);
-			foreach (var item in result)
-			{
-				if (item.Pets != null)
-				{
-					item.Count = item.Pets.Count();
-				}
-			}
-			return result;
-		}
+
 		// GET: api/Owners/5
 		[ResponseType(typeof(Owner))]
 		public IHttpActionResult GetOwner(int id)
 		{
-			Owner owner = db.Owners.Include(p => p.Pets)
-				.Where(o => o.OwnerId == id).FirstOrDefault();
+			var owner = _repo.GetOwnerById(id);
 
 			if (owner == null)
 			{
@@ -84,41 +48,6 @@ namespace OwnersPets.Controllers
 			}
 
 			return Ok(owner);
-		}
-
-		// PUT: api/Owners/5
-		[ResponseType(typeof(void))]
-		public IHttpActionResult PutOwner(int id, Owner owner)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-			if (id != owner.OwnerId)
-			{
-				return BadRequest();
-			}
-
-			db.Entry(owner).State = EntityState.Modified;
-
-			try
-			{
-				db.SaveChanges();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!OwnerExists(id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
-
-			return StatusCode(HttpStatusCode.NoContent);
 		}
 
 		// POST: api/Owners
@@ -129,11 +58,8 @@ namespace OwnersPets.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-
-			// make sure, that returns same owner
-			db.Owners.Add(owner);
-			db.SaveChanges();
-
+			owner = _repo.PostOwner(owner);
+	
 			return CreatedAtRoute("DefaultApi", new { id = owner.OwnerId }, owner);
 		}
 
@@ -141,19 +67,12 @@ namespace OwnersPets.Controllers
 		[ResponseType(typeof(Owner))]
 		public IHttpActionResult DeleteOwner(int id)
 		{
-			Owner owner = db.Owners.Include(p => p.Pets)
-				.Where(o => o.OwnerId == id).FirstOrDefault();
+			var owner = _repo.DeleteOwner(id);
+
 			if (owner == null)
 			{
 				return NotFound();
 			}
-			if (owner.Pets!=null)
-			{
-				db.Pets.RemoveRange(owner.Pets);
-			}
-			db.Owners.Remove(owner);
-			db.SaveChanges();
-
 			return Ok(owner);
 		}
 
@@ -161,14 +80,9 @@ namespace OwnersPets.Controllers
 		{
 			if (disposing)
 			{
-				db.Dispose();
+			_repo.Dispose();
 			}
 			base.Dispose(disposing);
-		}
-
-		private bool OwnerExists(int id)
-		{
-			return db.Owners.Count(e => e.OwnerId == id) > 0;
 		}
 	}
 }

@@ -3,41 +3,44 @@
 
 	angular
         .module('OwnersPets')
-        .factory('getOwnerSvc', getOwnerSvc);
+        .factory('getPetsSvc', getPetsSvc);
 
-	getOwnerSvc.$inject = ['$q', 'ownersSvc'];
+	getPetsSvc.$inject = ['$q', 'petsSvc'];
 
-	function getOwnerSvc($q, ownersSvc) {
-        var service = {
-        	initialize: initialize,
-        	navigate: navigate,
-        	pages: [],
-        	paging: {
-        		info: {
-        			totalItems: 0,
-        			totalPages: 1,
-        			currentPage: 0
-        		}
-        	}
-        };
+	function getPetsSvc($q, petsSvc) {
+		var service = {
+			initialize: initialize,
+			navigate: navigate,
+			pages: [],
+			paging: {
+				info: {
+					totalItems: 0,
+					totalPages: 1,
+					currentPage: 0
+				}
+			},
+			Id:-1
+		};
 
 		return service;
 
 		function initialize() {
-			var queryArgs = {
-				pageNumber: service.paging.info.currentPage
-			};
-
 			service.paging.info.currentPage = 1;
 
-			return ownersSvc.query(queryArgs).$promise.then(
+			var queryArgs = {
+				pageNumber: service.paging.info.currentPage,
+				id: service.Id
+			};
+
+
+			return petsSvc.query(queryArgs).$promise.then(
                 function (result) {
                 	var newPage = {
                 		number: pageNumber,
-                		owners: []
+                		pets: []
                 	};
-                	result.items.forEach(function (owner) {
-                		newPage.owners.push(owner);
+                	result.items.forEach(function (pet) {
+                		newPage.pets.push(pet);
                 	});
 
                 	service.pages.push(newPage);
@@ -69,17 +72,18 @@
 
 		function load(pageNumber) {
 			var queryArgs = {
-				pageNumber: pageNumber
+				pageNumber: pageNumber,
+				id: service.Id
 			};
 
-			return ownersSvc.query(queryArgs).$promise.then(
+			return petsSvc.query(queryArgs).$promise.then(
                 function (result) {
                 	var newPage = {
                 		number: service.paging.info.pageNumber,
-                		owners: []
+                		pets: []
                 	};
                 	result.items.forEach(function (owner) {
-                		newPage.owners.push(owner);
+                		newPage.pets.push(owner);
                 	});
 
                 	service.pages[pageNumber] = newPage;

@@ -10,33 +10,33 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using OwnersPets.Models;
 using Newtonsoft.Json;
+using OwnersPets.DAL;
+
 
 namespace OwnersPets.Controllers
 {
 	public class PetsController : ApiController
 	{
-		//public string ConvertToJson(dynamic names)
-		//{
-		//	return	JsonConvert.SerializeObject(names,	Formatting.None,
-		//		new JsonSerializerSettings()
-		//		{
-		//			ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-		//		});
-		//}
+		private PetDataRepository _repo;
 
-		private AppDbContext db = new AppDbContext();
-
-		// GET: api/Pets
-		public IQueryable<Pet> GetPets()
+		public PetsController()
 		{
-			return db.Pets;
+			_repo = new PetDataRepository(new AppDbContext());
+		}
+
+		// GET: api/Pets/5
+		[ResponseType(typeof(Pet))]
+		public IHttpActionResult GetPet(int id, int pageSize, int pageNumber)
+		{
+			var result = _repo.GetPetsByPages(id, pageSize, pageNumber);
+			return Ok(result);
 		}
 
 		// GET: api/Pets/5
 		[ResponseType(typeof(Pet))]
 		public IHttpActionResult GetPet(int id)
 		{
-			Pet pet = db.Pets.Find(id);
+			var pet = _repo.GetPetById(id);
 			if (pet == null)
 			{
 				return NotFound();
@@ -45,54 +45,16 @@ namespace OwnersPets.Controllers
 			return Ok(pet);
 		}
 
-		// PUT: api/Pets/5
-		[ResponseType(typeof(void))]
-		public IHttpActionResult PutPet(int id, Pet pet)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-			if (id != pet.PetId)
-			{
-				return BadRequest();
-			}
-
-			db.Entry(pet).State = EntityState.Modified;
-
-			try
-			{
-				db.SaveChanges();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!PetExists(id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
-
-			return StatusCode(HttpStatusCode.NoContent);
-		}
-
+		
 		// POST: api/Pets
 		[ResponseType(typeof(Pet))]
 		public IHttpActionResult PostPet(Pet pet)
 		{
+			pet = _repo.PostPet(pet);
 			if (!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
-			Owner owner = db.Owners.Include(p => p.Pets)
-				.Where(o => o.OwnerId == pet.OwnerId.OwnerId).FirstOrDefault();
-			pet.OwnerId = owner;
-			db.Pets.Add(pet);
-			db.SaveChanges();
 
 			return CreatedAtRoute("DefaultApi", new { id = pet.PetId }, pet);
 		}
@@ -101,15 +63,11 @@ namespace OwnersPets.Controllers
 		[ResponseType(typeof(Pet))]
 		public IHttpActionResult DeletePet(int id)
 		{
-			Pet pet = db.Pets.Find(id);
+			var pet = _repo.DeletePet(id);
 			if (pet == null)
 			{
 				return NotFound();
 			}
-
-			db.Pets.Remove(pet);
-			db.SaveChanges();
-
 			return Ok(pet);
 		}
 
@@ -117,14 +75,10 @@ namespace OwnersPets.Controllers
 		{
 			if (disposing)
 			{
-				db.Dispose();
+				_repo.Dispose();
 			}
 			base.Dispose(disposing);
 		}
 
-		private bool PetExists(int id)
-		{
-			return db.Pets.Count(e => e.PetId == id) > 0;
-		}
 	}
 }

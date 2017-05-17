@@ -1,5 +1,5 @@
 ﻿	<h1>{{owner.ownerName}}'s pets</h1>
-<a href="/" ng-click="goBack()">Return to owners</a>
+<a href="/">Return to owners</a>
 <h5>{{result}}</h5>
 <form id="pets-form" ng-submit="addPet()" class="form-inline padding">
 	<div class="form-group">
@@ -14,7 +14,7 @@
 	<tr>
 		<th class="tableTitle">Pet name</th>
 	</tr>
-	<tbody ng-repeat="pet in owner.pets">
+	<tbody ng-repeat="pet in pages[info.currentPage].pets">
 		<tr>
 			<td>
 				<div class="table_item ">{{pet.petName}}</div>
@@ -23,3 +23,5 @@
 		</tr>
 	</tbody>
 </table>
+<pager total-pages="info.totalPages" current-page="info.currentPage" page-action="navigate(pageNumber)"></pager>
+

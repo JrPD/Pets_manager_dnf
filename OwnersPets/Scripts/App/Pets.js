@@ -1,32 +1,35 @@
 ﻿angular
 	.module('OwnersPets')
-	.controller('PetCtrl', ['$scope', '$http','$routeParams', PetCtrl])
-function PetCtrl($scope, $http, $routeParams) {
-	$scope.name = 'PetCtrl';
+	.controller('PetCtrl', ['$scope', '$http', '$routeParams', '$q', 'getPetsSvc', PetCtrl])
+function PetCtrl($scope, $http, $routeParams, $q, getPetsSvc) {
 	$scope.ownerId = $routeParams.ownerId;
-	//$('#OwnersPage').hide();
-	//$('#petsView').show();
 	$scope.removePet = removePet;
 	$scope.addPet = addPet;
 
-	$scope.goBack = function () {
-		//$('#OwnersPage').show();
-		//$('#petsView').hide();
-		
-	}
+	$scope.pages = getPetsSvc.pages;
+	getPetsSvc.paging.info.currentPage = 1;
+	$scope.info = getPetsSvc.paging.info;
+	getPetsSvc.Id = $scope.ownerId;
+
+	$scope.navigate = navigate;
+
+	$scope.status = {
+		type: "info",
+		message: "ready",
+		busy: false
+	};
+
+	activate();
+
 	var uriOwner = "/api/owners/" + $scope.ownerId
 	var uri = "/api/pets/";
+
 	$http.get(uriOwner)
 		.then(function (response) {
 			var data = response.data;
 			$scope.owner = data;
-			updateTotal();
-			console.log(data);
 		});
 
-	function updateTotal() {
-		$scope.totalCount = $scope.owner.pets.length;
-	}
 	function addPet() {
 		if (this.newPet) {
 			addToDb(this.newPet, $scope, $http);
@@ -44,7 +47,6 @@ function PetCtrl($scope, $http, $routeParams) {
 			if (response.status = 201) {
 				$scope.owner.pets.unshift(response.data)
 				$scope.result = "Created new pet with name: " + response.data.petName;
-				console.log(response);
 				updateTotal();
 			}
 		});
@@ -56,7 +58,6 @@ function PetCtrl($scope, $http, $routeParams) {
 			$scope.owner.pets.splice(index, 1);
 		}
 		removeFromDb(pet, $scope, $http);
-		updateTotal();
 	}
 	function removeFromDb(pet, $scope, $http) {
 		$http({
@@ -66,7 +67,37 @@ function PetCtrl($scope, $http, $routeParams) {
 		.then(function (response) {
 			var name = response.data.petName;
 			$scope.result = "Pet with name: " + name + " removed"
-			console.log(response);
+			updateTotal();
 		});
+	}
+
+	function activate() {
+		//if this is the first activation of the controller load the first page
+		if (getPetsSvc.paging.info.currentPage === 0) {
+			navigate(1);
+		}
+		else {
+			updateTotal();
+		}
+	}
+
+	function navigate(pageNumber) {
+		$scope.status.busy = true;
+		$scope.status.message = "loading records";
+
+		getPetsSvc.navigate(pageNumber)
+						.then(function () {
+							$scope.status.message = "ready";
+						}, function (result) {
+							$scope.status.message = "something went wrong: " + (result.error || result.statusText);
+						})
+						['finally'](function () {
+							$scope.status.busy = false;
+						});
+	}
+
+	function updateTotal() {
+		$scope.pages[$scope.info.currentPage] = null;
+		navigate($scope.info.currentPage)
 	}
 }
