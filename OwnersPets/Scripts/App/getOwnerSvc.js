@@ -25,7 +25,8 @@
 
 		function initialize() {
 			var queryArgs = {
-				pageNumber: service.paging.info.currentPage
+                pageNumber: service.paging.info.currentPage,
+                controller: "owners"
 			};
 
 			service.paging.info.currentPage = 1;
@@ -56,20 +57,13 @@
 			if (pageNumber > service.paging.info.totalPages) {
 				return dfd.reject({ error: "page number out of range" });
 			}
-
-			if (service.pages[pageNumber]) {
-				service.paging.info.currentPage = pageNumber;
-				dfd.resolve();
-			} else {
-				return load(pageNumber);
-			}
-
-			return dfd.promise;
+			return load(pageNumber);
 		}
 
 		function load(pageNumber) {
 			var queryArgs = {
-				pageNumber: pageNumber
+                pageNumber: pageNumber,
+                controller: "owners"
 			};
 
 			return ownersSvc.query(queryArgs).$promise.then(

@@ -16,15 +16,11 @@ namespace OwnersPets.Controllers
 	public class OwnersController : ApiController
 	{
 		private OwnerDataRepository _repo;
-
 		public OwnersController()
 		{
-			_repo = new OwnerDataRepository(new AppDbContext());
+			_repo =WebApiApplication.RepoOwners;
 		}
-		public OwnersController(OwnerDataRepository repo)
-		{
-			_repo = repo;
-		}
+
 		// GET: api/Owners
 		//[Route("{pageSize:int}/{pageNumber:int}/{orderBy:alpha?}")]
 		public IHttpActionResult GetOwners(int pageSize, int pageNumber)

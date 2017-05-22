@@ -42,7 +42,7 @@ function PetCtrl($scope, $http, $routeParams, $q, getPetsSvc) {
 			petName: name,
 			ownerId: $scope.owner
 		};
-		$http.post(uri + $scope.ownerId, pet)
+		$http.post(uri, pet)
 		.then(function (response) {
 			if (response.status = 201) {
 				$scope.owner.pets.unshift(response.data)

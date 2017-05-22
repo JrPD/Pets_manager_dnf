@@ -21,7 +21,7 @@ namespace OwnersPets.Controllers
 
 		public PetsController()
 		{
-			_repo = new PetDataRepository(new AppDbContext());
+			_repo =WebApiApplication.RepoPets;
 		}
 
 		// GET: api/Pets/5

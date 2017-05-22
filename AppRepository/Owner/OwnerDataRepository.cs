@@ -11,9 +11,9 @@ namespace OwnersPets.DAL
 	public class OwnerDataRepository : IOwnerDataRepository
 	{
 		private readonly AppDbContext _db;
-		public OwnerDataRepository(AppDbContext db)
+		public OwnerDataRepository()
 		{
-			_db = db;
+			_db = new AppDbContext();
 		}
 		#region IOwnerDataRepository Members
 
@@ -21,6 +21,7 @@ namespace OwnersPets.DAL
 		{
 			var totalCount = _db.Owners.Count();
 			var totalPages = Math.Ceiling((double)totalCount / pageSize);
+			totalPages = totalPages == 0 ? 1 : totalPages;
 			var ownersQuery = _db.Owners.Include(p => p.Pets);
 			ownersQuery = ownersQuery.OrderBy(c => c.OwnerName);
 
